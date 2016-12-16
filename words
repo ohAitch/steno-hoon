@@ -4,6 +4,7 @@ join.x     = insert x between words, default join.' '; show shadow join characte
 DOT        = .
 BUC        = $
 NIL        = ~
+CAB        = _
 QOT        = ' float.'
 MOLD       = $__
 BUNT       = *__
@@ -37,30 +38,40 @@ CALL-PAIR  = %+
 CALL-MANY: = %-  __  :*  float.==
 FOLD:      = ;:
 CAST       = ^-
-NAME       = infix = (XX fix for types)
-DOOR       = |_, float.'\n--', '++  __' on next line
+IS         = infix = (XX fix for types)
+CORE       = |%, float.'\n--', '++  __' on next line
 EROC       = --, removing non-leading '++  __'
+DOOR       = |_  __, float as per CORE
 GATE       = |=  
 EXTRACT    = =^
 ALIAS      = =*
-LET        = =*
-MAKE:      = %= irregular, i.e. postfix.( float.)
+USE        = =,
+LET        = =/
+MUT        = =.
+LEAD       = ^?
+MOD        = %= irregular, i.e. postfix.(__ __)
+RUN:       = %~
 STUB       = !!
 FROND:     = [%__ float.]
 FRONDS:    = :~  [%__ float.], RET = FROND:, float.==
-PULL:      = join.:
+ARROW:     = ;~
 FROM       = infix .
 DASH       = infix -
+PULL       = infix :
+PULLS:     = join.:
 DASHED     = retroactive infix -
-SAMPLE     = +<.$
-RETURN     = +>.$
+ARGS       = +<.$
+SELF       = ..<nearest non-$ arm>
 SAVE       = Cmd-s
 HEAD, TAIL = - + building a ->- chain
+
+URL:       = https:// set-join..
 
 
 # Magic
 - Path mode: join./ outer expressions
-- File + scope-based autocomplete is used to distinguish between "call vane" and "call-vane", latter taking precedence. Limbs to limbs, terms to terms. Expanded to "everything possible to get into scope" in join.: mode
+- File & scope-based autocomplete is used to distinguish between "call vane" and "call-vane", latter taking precedence. Limbs to limbs, terms to terms. Expanded to "everything possible to get into scope" in join.: mode
+  + same for lib/sur
   + alternately just dash everywhere
 - Bare __ as syntax stub, cf !! as type stub. Inserted by basically all runes.
 - Lines starting with '++' join.- until first other expression
@@ -72,10 +83,11 @@ HEAD, TAIL = - + building a ->- chain
 - Generally parse "insert x of wrong mode" as "jump to next appropriate location"
   + non-molds in ^-
   + commands in ', tho that might be annoying for bootstrapping
-- NAME NIL CONS: etc. emit 151 in tile mode
+- IS NIL CONS: etc. emit 151 in tile mode
 - ATOM u d  and such works, just grabs single letters
 - Hoon indentation gets applied to words in log, retroactively per wide/tall switching
 - Rainbow paren currently active __ levels(i.e. "what will RET do")?
+- Normal letter and number globbing for stuff like "oauth2"
 
 # Overlay modes
 - probably as ruby text?
@@ -92,7 +104,6 @@ HEAD, TAIL = - + building a ->- chain
   + keep immutable hashes of fork points around to concisely define tree undo, dag log files
 - type-to-tlv name autogeneration in |= / $:
 - bikeshed what to call EXTRACT
-  + "MAKE-MOD"
   + "SIP"
   + "NEW-CHANGING-OLD"
   + "PIN-SET" (=+ =.)
@@ -141,17 +152,17 @@ CALL-MANY: CALL: DOT BUNT vase
   CAST ATOM e QOT totally HEP eny
   CLAM NIL
 COLDE
-DOOR mow NAME CALL: list move 
+DOOR mow IS CALL: list move 
 RET do task
-  GATE  PULL: task able jael FROM zuse
+  GATE  PULLS: task able jael FROM zuse
   RET EXTRACT   mow new DASHED   BUC FROM call
-    CALL: call LIST: PATH: test HEP jael :LLEC SYM noun SYM soft SAMPLE
-  RET RETURN MAKE: mow CALL: welp mow mow new
+    CALL: call LIST: PATH: test HEP jael :LLEC SYM noun SYM soft ARGS
+  RET SELF MOD mow CALL: welp mow mow new
 EROC
 COLDE
 CALL: do task SYM init
 COLDE
-CELL: lex mow NAME mow
+CELL: lex mow IS mow
 SAVE
 ```
 
@@ -212,33 +223,132 @@ RET poke x run
   FOLD: welp
     subs DASH all
     test DASH rights
-    test DASH p k i
+    test DASH pki
     unsubscribe
 RET all subs
-  LIST: veil TAG our TALL
-        vein TAG NIL
-        vest TAG NIL
-        vine TAG NIL
+  FRONDS: veil our TALL
+      RET vein NIL
+      RET vest NIL
+      RET vine NIL
+      RET
 RET subs all
   CALL-PAIR  all subs
-  GATE a NAME sub
+  GATE a IS sub
   CONS:  HEAD FROM a  a  TAIL FROM a
 RET test rights
   LET him fakesub
   LET him DASH 2 fakesub
   LET promises CAST safe TODO: generate some rites
-  RET LIST-TALL: FROND: mint him promises
-             RET FROND: move  him  him 2  promises
-             RET FROND: burn  him 2  promises
-             RET FROND: hail  him 2  promises
-             RET
-RET test p k i
+  RET FRONDS: mint him promises
+          RET move  him  him 2  promises
+          RET burn  him 2  promises
+          RET hail  him 2  promises
+          RET
+RET test pki
   LET him fakesub
-  LIST-TALL: FROND: meet  CALL: make DASH will him
-         RET
+  FRONDS: meet  CALL: make DASH will him
+      RET
 RET unsubscribe
   CALL-PAIR  turn  all subs
-  GATE a NAME path FROND: nuke a nil
+  GATE a IS path FROND: nuke a nil
 RET emil STUB
+SAVE
+```
+
+```
+::  Test url +https://www.googleapis.com/oauth2/v1/userinfo
+::
+::::  /hoon/googleapis/com/sec
+  ::
+/+    oauth2, interpolate, hep-to-cab
+::
+::::
+  ::
+|%
+++  user-state  {ber/token ref/refresh}:oauth2
+++  suffix-email
+  %+  cook  welp
+  ;~  plug
+    (star ;~(less pat prn))
+    ;~(pose (plus prn) (easy "@gmail.com"))
+  ==
+::
+++  auth-usr
+  |=  usr/iden
+  =+  lon=(fall (slaw %t usr) usr)
+  %+  add-query:interpolate  'https://accounts.google.com/o/oauth2/v2/auth'
+  %-  quay:hep-to-cab
+  :~  login-hint+?~(lon '' (crip (rash lon suffix-email)))
+      access-type+%offline
+      response-type+%code
+      prompt+%consent
+  ==
+++  scopes
+  :~  'https://mail.google.com'
+      'https://www.googleapis.com/auth/plus.me'
+      'https://www.googleapis.com/auth/userinfo.email'
+  ==
+::
+++  exchange-url  'https://www.googleapis.com/oauth2/v4/token'
+--
+::
+::::
+  ::
+|_  {bal/(bale keys:oauth2) own/user-state}
+::  ++auth is a "standard refreshing oauth2" core, which implements the
+::  most common handling of oauth2 semantics. see lib/oauth2 for more details,
+::  and examples at the bottom of the file.
+++  auth  ^?
+  =+  a=~(standard-refreshing oauth2 bal ber.own)
+  (a(state-usr &) ..auth ref.own |=(b/user-state ..auth(own b)))
+::
+++  filter-request  =,(auth (out-refresh-or-add-header exchange-url scopes dialog-url))
+++  dialog-url  (auth-usr usr.bal)
+::
+++  filter-response  =,(auth res-save-after-refresh)
+::
+++  receive-auth-query-string  =,(auth (in-code-to-token exchange-url))
+++  receive-auth-response      =,(auth bak-save-both-tokens)
+:: ++  update  *user-state
+--
+
+
+COMT: Test url PLUS PASTE.1 # URL:  googleapis com PATH:  oauth2  v1  userinfo
+COLDE-COMT: PATH: hoon googleapis com sec
+LIBS: oauth2  interpolate  hep to cab
+COLDE
+CORE
+    user state  MOLD CELL: ber IS token  ref IS refresh :LLEC PULL oauth2
+RET suffix email
+  CALL-PAIR: cook welp
+  ARROW-TALL: plug
+        CALL: star ARROW: less pat prn
+    RET ARROW: pose CALL: plus prn :LLAC CALL: easy QUT AT gmail .com
+    RET
+RET auth  usr
+  GATE  usr  name user
+  LET  lon  CALL: fall  CALL: slaw SYM t usr :LLAC  usr
+  RET CALL-PAIR PULL: add DASH query  interpolate
+    RET QOT PASTE.2 # URL: accounts google com PATH: o oauth2 v2 auth
+  FRONDS:  login CAB hint     IF-NIL  QOT QOT CALL: crip CALL: rash lon suffix email
+       RET access CAB type    SYM offline
+       RET response CAB type  SYM code
+       RET prompt             SYM consent
+       RET
+RET scopes  {pasting and interactive editing omitted}
+RET exchange url PASTE.3 # URL: etc.
+EROC
+COLDE
+DOOR CELL: bay IS CALL: bale USE oauth2 keys:LLAC  own IS user state
+RET auth  LEAD
+  LET a RUN: standard refreshing oauth2 bay ber FROM own
+  RET CALL:  a MOD state usr &  SELF  ref FROM own  GATE b IS user state SELF MOD own b
+RET filter request
+  USE auth CALL: out refresh or add header exchange url scopes dialog url
+RET dialog url  CALL: auth usr  usr FROM bal
+RET filter response  USE auth res save after refresh
+RET recieve auth query string  USE auth CALL: in code to token  exchange url
+RET recieve auth response  USE auth  bak save both tokens
+RET update  BUNT user state COMT-ARM
 SAVE
 ```
