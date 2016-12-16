@@ -1,0 +1,125 @@
+float.x    = ' ' ++ x  stuck to EOL, explicit x = navigate past next float
+join.x     = insert x between words, default join.' '; show shadow join character after cursor
+
+DOT        = .
+BUC        = $
+QOT        = ' float.'
+BUNT       = *__
+CLAM       = _[__]
+PREV       = ^__
+ATOM       = @
+CALL:      = (__ float.)
+:LLAC      = )
+CELL:      = [__ float.]
+:LLEC      = ]
+LIST:      = ~[__ float.]
+
+COLDE      = insert comment tilde, closing all non-core contexts
+COMT       = insert/edit ::
+PATH:      = / set-join./
+INCLUDE    = //
+BASE       = === 
+RET        = return / resetting join mode, or navigate past -- == etc
+RUN-DOJO:  = '{{dojo-res:$(gensym)}}', using dojo to produce an expression
+CALL-MANY: = %+  __  :*  float.==
+CAST       = ^-
+NAME       = join.= (XX fix for types)
+DOOR       = |_, float.'\n--', '++  __' on next line
+EROC       = --, removing non-leading '++  __'
+GATE       = |=  
+EXTRACT    = =^
+MAKE:      = %= irregular, i.e. postfix.( float.)
+PULL:      = join.:
+FROM       = infix .
+DASH       = infix -
+DASHED     = retroactive infix -
+SAMPLE     = +<.$
+RETURN     = +>.$
+SAVE       = Cmd-s
+
+
+# Magic
+- Path mode: join./ outer expressions
+- Scope-based autocomplete is used to distinguish between "call vane" and "call-vane", latter taking precedence. Arms and faces for vanes, types for terms. Expanded to "everything possible to get into scope" in join.: mode
+  + alternately just dash everywhere
+- Bare __ as syntax stub, cf !! as type stub. Inserted by basically all runes.
+- Lines starting with '++' join.- until first other expression
+  + float '++  __' when filled in and selected, navigable with RET
+- Run-dojo mode opens repl, on first non-crash closes repl and pastes in result
+- Wide/tall auto switching, with trailing comments enforcing tall (enforcing wide probably counterproductive?)
+- Generally parse "insert x of wrong mode" as "jump to next appropriate location"
+  + non-molds in ^-
+  + commands in ', tho that might be annoying for bootstrapping
+
+# Overlay modes
+- probably as ruby text?
+- item counts for ~[] / cores / ?- / etc. variable arity
+- explicit '[ ' ' ]' around all expressions
+- Show steno captions on command word log
+- Show glyph expansions on command word log (probably easier to just run the thing)
+
+# Example
+
+```
+::
+::::  /hoon/jael/test/lib
+  ::
+//  /===/sys/vane/jael
+::
+::::
+  ::
+((. *vase) ~2016.12.15..23.02.18..f874 `@e`'totally-eny' _~)
+::
+::::
+  ::
+|_  mow/(list move)
+++  do-task
+  |=  task:able:^jael.zuse
+  =^  mow-new  $.call
+    (call [/test-jael]~ %noun %soft +<)
+  +>.$(mow (welp mow mow-new))
+--
+::
+::::
+  ::
+(do-task %init ~sipnum (my giv+['pittyp' 'Pittyp'] ~))
+::
+::::
+  ::
+[lex mow=mow]
+
+COLDE-COMT PATH: hoon jael test lib
+RET INCLUDE-PATH: BASE sys vane jael
+COLDE
+CALL-MANY: CALL: DOT BUNT vase
+  RET RUN-DOJO: now
+  RET CAST ATOM e QOT totally HEP eny
+  RET CLAM NIL
+COLDE
+DOOR mow NAME CALL: list move 
+RET do task
+  RET GATE  PULL: task able jael FROM zuse
+  RET EXTRACT   mow new DASHED   BUC FROM call
+    CALL: call LIST: PATH: test HEP jael :LLEC SYM noun SYM soft SAMPLE
+  RET RETURN MAKE: mow CALL: welp mow mow new
+EROC
+COLDE
+CALL: do task SYM init
+COLDE
+CELL: lex mow NAME mow
+SAVE
+```
+
+# TODO
+- jump between open __s?
+- Similarly, some way to tab out of '' [] etc
+- define forward/backward arrows as navigating in (possibly normalized) instruction stream, up/down going between RETs
+- type-to-tlv name autogeneration in |= / $:
+- bikeshed what to call EXTRACT
+  + "MAKE-MOD"
+  + "SIP"
+  + "NEW-CHANGING-OLD"
+  + "PIN-SET" (=+ =.)
+  + "LET-MUT"
+- how do command words get defined anyway? Reuse one of stenoboard FN keys as a CMD and call it a day? ("CALL:" vs "call" is basically a use-mention distinction).
+  + or do something with *, or number bar
