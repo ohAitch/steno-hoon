@@ -3,32 +3,51 @@ join.x     = insert x between words, default join.' '; show shadow join characte
 
 DOT        = .
 BUC        = $
+NIL        = ~
 QOT        = ' float.'
+MOLD       = $__
 BUNT       = *__
 CLAM       = _[__]
 PREV       = ^__
 ATOM       = @
 CALL:      = (__ float.)
 :LLAC      = )
+KICK       = (__)
 CELL:      = [__ float.]
 :LLEC      = ]
 LIST:      = ~[__ float.]
+LONE       = [__]
+PAIR       = :-
+TREL       = :+
+QUAD       = :^
+LIST-TALL: = :~
 
 COLDE      = insert comment tilde, closing all non-core contexts
-COMT       = insert/edit ::
+TALL       = force tall mode via empty ::
+COMT:      = insert/edit ::
+:TMOC      = unjump from comment
+TODO:      = [__] :: 
 PATH:      = / set-join./
 INCLUDE    = //
 BASE       = === 
-RET        = return / resetting join mode, or navigate past -- == etc
+RET        = newline, resetting join mode; or navigate past -- == etc
 RUN-DOJO:  = '{{dojo-res:$(gensym)}}', using dojo to produce an expression
-CALL-MANY: = %+  __  :*  float.==
+CALL-LONE  = %-
+CALL-PAIR  = %+
+CALL-MANY: = %-  __  :*  float.==
+FOLD:      = ;:
 CAST       = ^-
-NAME       = join.= (XX fix for types)
+NAME       = infix = (XX fix for types)
 DOOR       = |_, float.'\n--', '++  __' on next line
 EROC       = --, removing non-leading '++  __'
 GATE       = |=  
 EXTRACT    = =^
+ALIAS      = =*
+LET        = =*
 MAKE:      = %= irregular, i.e. postfix.( float.)
+STUB       = !!
+FROND:     = [%__ float.]
+FRONDS:    = :~  [%__ float.], RET = FROND:, float.==
 PULL:      = join.:
 FROM       = infix .
 DASH       = infix -
@@ -36,20 +55,27 @@ DASHED     = retroactive infix -
 SAMPLE     = +<.$
 RETURN     = +>.$
 SAVE       = Cmd-s
+HEAD, TAIL = - + building a ->- chain
 
 
 # Magic
 - Path mode: join./ outer expressions
-- Scope-based autocomplete is used to distinguish between "call vane" and "call-vane", latter taking precedence. Arms and faces for vanes, types for terms. Expanded to "everything possible to get into scope" in join.: mode
+- File + scope-based autocomplete is used to distinguish between "call vane" and "call-vane", latter taking precedence. Limbs to limbs, terms to terms. Expanded to "everything possible to get into scope" in join.: mode
   + alternately just dash everywhere
 - Bare __ as syntax stub, cf !! as type stub. Inserted by basically all runes.
 - Lines starting with '++' join.- until first other expression
-  + float '++  __' when filled in and selected, navigable with RET
+  + float a subsequent '++  __' when filled in and selected, navigable with RET
+  + :: handling, with search tags if you must
 - Run-dojo mode opens repl, on first non-crash closes repl and pastes in result
 - Wide/tall auto switching, with trailing comments enforcing tall (enforcing wide probably counterproductive?)
+  + LIST-TALL: CASE: etc. add a nesting level that isn't redundant with things on the same line, CASE-WIDE: CELL: CALL: and such are all closed by one RET
 - Generally parse "insert x of wrong mode" as "jump to next appropriate location"
   + non-molds in ^-
   + commands in ', tho that might be annoying for bootstrapping
+- NAME NIL CONS: etc. emit 151 in tile mode
+- ATOM u d  and such works, just grabs single letters
+- Hoon indentation gets applied to words in log, retroactively per wide/tall switching
+- Rainbow paren currently active __ levels(i.e. "what will RET do")?
 
 # Overlay modes
 - probably as ruby text?
@@ -58,7 +84,26 @@ SAVE       = Cmd-s
 - Show steno captions on command word log
 - Show glyph expansions on command word log (probably easier to just run the thing)
 
-# Example
+# TODO
+- jump between open __s?
+- Similarly, some way to tab out of '' [] etc; define -- ] ) etc. as pure navigation commands? (In which case symmetrical ones for moving back left)
+- define forward/backward arrows as navigating in (possibly normalized) instruction stream, up/down going between RETs
+  + Any non-tail command insertion is effectively a rebase
+  + keep immutable hashes of fork points around to concisely define tree undo, dag log files
+- type-to-tlv name autogeneration in |= / $:
+- bikeshed what to call EXTRACT
+  + "MAKE-MOD"
+  + "SIP"
+  + "NEW-CHANGING-OLD"
+  + "PIN-SET" (=+ =.)
+  + "LET-MUT"
+- how do command words get defined anyway? Reuse one of stenoboard FN keys as a CMD and call it a day? ("CALL:" vs "call" is basically a use-mention distinction).
+  + or do something with *, or number bar
+- Comment interaction with RET
+- Shortcut for "a new arm, which I will now define in the current core"; keeping "jump back to call site" on RET stack
+  + ~explicit~ ret stack?
+  
+# Examples
 
 ```
 ::
@@ -88,17 +133,17 @@ SAVE       = Cmd-s
   ::
 [lex mow=mow]
 
-COLDE-COMT PATH: hoon jael test lib
-RET INCLUDE-PATH: BASE sys vane jael
+COLDE-COMT: PATH: hoon jael test lib :TMOC
+INCLUDE-PATH: BASE sys vane jael
 COLDE
 CALL-MANY: CALL: DOT BUNT vase
-  RET RUN-DOJO: now
-  RET CAST ATOM e QOT totally HEP eny
-  RET CLAM NIL
+  RUN-DOJO: now
+  CAST ATOM e QOT totally HEP eny
+  CLAM NIL
 COLDE
 DOOR mow NAME CALL: list move 
 RET do task
-  RET GATE  PULL: task able jael FROM zuse
+  GATE  PULL: task able jael FROM zuse
   RET EXTRACT   mow new DASHED   BUC FROM call
     CALL: call LIST: PATH: test HEP jael :LLEC SYM noun SYM soft SAMPLE
   RET RETURN MAKE: mow CALL: welp mow mow new
@@ -110,16 +155,90 @@ CELL: lex mow NAME mow
 SAVE
 ```
 
-# TODO
-- jump between open __s?
-- Similarly, some way to tab out of '' [] etc
-- define forward/backward arrows as navigating in (possibly normalized) instruction stream, up/down going between RETs
-- type-to-tlv name autogeneration in |= / $:
-- bikeshed what to call EXTRACT
-  + "MAKE-MOD"
-  + "SIP"
-  + "NEW-CHANGING-OLD"
-  + "PIN-SET" (=+ =.)
-  + "LET-MUT"
-- how do command words get defined anyway? Reuse one of stenoboard FN keys as a CMD and call it a day? ("CALL:" vs "call" is basically a use-mention distinction).
-  + or do something with *, or number bar
+```
+::
+::::  /hoon/call-jael/app
+  ::
+=*  state  $~
+|_  {bowl state}
+++  poke--run
+  |=  $~
+  %-  emil
+  ;:  welp
+    subscribe-all 
+    test-ry  test-pki 
+    unsubscribe
+  ==
+::
+++  all-subscr
+  :~  veil+our
+      vein+~
+      vest+~
+      vine+~
+  ==
+::
+++  subscribe-all
+  %+  turn  all-subscr
+  |=  a/subscription
+  [-.a a +.a]
+::
+++  test-ry
+  =/  him  fakesub
+  =/  him2  fakesub
+  =/  promises  `safe`[generate some rites]
+  :~  [%mint him promises]
+      [%move him him2 promises]
+      [%burn him2 promises]
+      [%hail him2 promises2]
+  ==
+::
+++  test-pki
+  =/  him  fakesub
+  :~  [%meet (make-will him)]
+  ==
+++  unsubscribe  
+  %+  turn  all-subscr
+  |=(a/path [%nuke a ~])
+::
+++  emil  !!
+--
+
+COLDE-COMT: PATH: hoon call DASH jael app :TMOC
+ALIAS state MOLD NIL
+DOOR CONS: bowl state
+RET poke x run
+  GATE NIL
+  CALL-LONE emil
+  FOLD: welp
+    subs DASH all
+    test DASH rights
+    test DASH p k i
+    unsubscribe
+RET all subs
+  LIST: veil TAG our TALL
+        vein TAG NIL
+        vest TAG NIL
+        vine TAG NIL
+RET subs all
+  CALL-PAIR  all subs
+  GATE a NAME sub
+  CONS:  HEAD FROM a  a  TAIL FROM a
+RET test rights
+  LET him fakesub
+  LET him DASH 2 fakesub
+  LET promises CAST safe TODO: generate some rites
+  RET LIST-TALL: FROND: mint him promises
+             RET FROND: move  him  him 2  promises
+             RET FROND: burn  him 2  promises
+             RET FROND: hail  him 2  promises
+             RET
+RET test p k i
+  LET him fakesub
+  LIST-TALL: FROND: meet  CALL: make DASH will him
+         RET
+RET unsubscribe
+  CALL-PAIR  turn  all subs
+  GATE a NAME path FROND: nuke a nil
+RET emil STUB
+SAVE
+```
