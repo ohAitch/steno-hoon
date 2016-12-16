@@ -10,12 +10,13 @@ MOLD       = $__
 BUNT       = *__
 CLAM       = _[__]
 PREV       = ^__
-ATOM       = @
+AT       = @
+WUT        = ?
 CALL:      = (__ float.)
 :LLAC      = )
 KICK       = (__)
-CELL:      = [__ float.]
-:LLEC      = ]
+CONS:      = [__ float.]
+:SNOC      = ]
 LIST:      = ~[__ float.]
 LONE       = [__]
 PAIR       = :-
@@ -26,7 +27,10 @@ LIST-TALL: = :~
 COLDE      = insert comment tilde, closing all non-core contexts
 TALL       = force tall mode via empty ::
 COMT:      = insert/edit ::
+COMT-TALL: = insert/edit many ::
 :TMOC      = unjump from comment
+COMT-ARM   = comment surrounding non-$ arm
+COMT-LINE  = comment everything that would be closed by RET
 TODO:      = [__] :: 
 PATH:      = / set-join./
 INCLUDE    = //
@@ -55,6 +59,9 @@ STUB       = !!
 FROND:     = [%__ float.]
 FRONDS:    = :~  [%__ float.], RET = FROND:, float.==
 ARROW:     = ;~
+FORK:      = $?
+FORK-SYMS: = $? $__ join.' $'
+:KROF      = close $?
 FROM       = infix .
 DASH       = infix -
 PULL       = infix :
@@ -79,15 +86,22 @@ URL:       = https:// set-join..
   + :: handling, with search tags if you must
 - Run-dojo mode opens repl, on first non-crash closes repl and pastes in result
 - Wide/tall auto switching, with trailing comments enforcing tall (enforcing wide probably counterproductive?)
-  + LIST-TALL: CASE: etc. add a nesting level that isn't redundant with things on the same line, CASE-WIDE: CELL: CALL: and such are all closed by one RET
+  + LIST-TALL: CASE: etc. add a nesting level that isn't redundant with things on the same line, CASE-WIDE: CONS: CALL: and such are all closed by one RET
 - Generally parse "insert x of wrong mode" as "jump to next appropriate location"
   + non-molds in ^-
   + commands in ', tho that might be annoying for bootstrapping
+  + Runes in normal comment mode (contrast commented out code, or manually building them from glyphs)
 - IS NIL CONS: etc. emit 151 in tile mode
-- ATOM u d  and such works, just grabs single letters
+- AT u d  and such works, just grabs single letters
 - Hoon indentation gets applied to words in log, retroactively per wide/tall switching
 - Rainbow paren currently active __ levels(i.e. "what will RET do")?
 - Normal letter and number globbing for stuff like "oauth2"
+- impilict CALL: from saying "a b c" where a is a gate
+  + except in molds, except except when *a is a mold
+    * if previous arm was a mold, treat this as one, so you can day '++user cord' cleanly
+  + fixed arity (a __ __) autocomplete by looking at sample, e.g. map, set, pair
+  + override with LONE, fixed-arity autocomplete disappears when navigated away
+  + roll back if this doesn't work
 
 # Overlay modes
 - probably as ruby text?
@@ -113,6 +127,7 @@ URL:       = https:// set-join..
 - Comment interaction with RET
 - Shortcut for "a new arm, which I will now define in the current core"; keeping "jump back to call site" on RET stack
   + ~explicit~ ret stack?
+- Explicit "all these arms are molds" mode? Curtis' proposed "structure core" related.
   
 # Examples
 
@@ -144,25 +159,25 @@ URL:       = https:// set-join..
   ::
 [lex mow=mow]
 
-COLDE-COMT: PATH: hoon jael test lib :TMOC
+COLDE-COMT: PATH: hoon jael test lib
 INCLUDE-PATH: BASE sys vane jael
 COLDE
 CALL-MANY: CALL: DOT BUNT vase
   RUN-DOJO: now
-  CAST ATOM e QOT totally HEP eny
+  CAST AT e QOT totally HEP eny
   CLAM NIL
 COLDE
-DOOR mow IS CALL: list move 
+DOOR mow IS list move 
 RET do task
   GATE  PULLS: task able jael FROM zuse
   RET EXTRACT   mow new DASHED   BUC FROM call
-    CALL: call LIST: PATH: test HEP jael :LLEC SYM noun SYM soft ARGS
-  RET SELF MOD mow CALL: welp mow mow new
+    call LIST: PATH: test HEP jael :SNOC SYM noun SYM soft ARGS
+  RET SELF MOD mow  welp mow mow new
 EROC
 COLDE
-CALL: do task SYM init
+do task SYM init
 COLDE
-CELL: lex mow IS mow
+CONS: lex mow IS mow
 SAVE
 ```
 
@@ -214,7 +229,7 @@ SAVE
 ++  emil  !!
 --
 
-COLDE-COMT: PATH: hoon call DASH jael app :TMOC
+COLDE-COMT: PATH: hoon call DASH jael app
 ALIAS state MOLD NIL
 DOOR CONS: bowl state
 RET poke x run
@@ -300,7 +315,9 @@ SAVE
 ::  and examples at the bottom of the file.
 ++  auth  ^?
   =+  a=~(standard-refreshing oauth2 bal ber.own)
-  (a(state-usr &) ..auth ref.own |=(b/user-state ..auth(own b)))
+  %^  a(state-usr &)
+    ..auth  ref.own
+  |=(b/user-state ..auth(own b)))
 ::
 ++  filter-request  =,(auth (out-refresh-or-add-header exchange-url scopes dialog-url))
 ++  dialog-url  (auth-usr usr.bal)
@@ -318,19 +335,19 @@ COLDE-COMT: PATH: hoon googleapis com sec
 LIBS: oauth2  interpolate  hep to cab
 COLDE
 CORE
-    user state  MOLD CELL: ber IS token  ref IS refresh :LLEC PULL oauth2
+    user state  MOLD CONS: ber IS token  ref IS refresh :LLEC PULL oauth2
 RET suffix email
   CALL-PAIR: cook welp
   ARROW-TALL: plug
-        CALL: star ARROW: less pat prn
-    RET ARROW: pose CALL: plus prn :LLAC CALL: easy QUT AT gmail .com
+        star ARROW: less pat prn
+    RET ARROW: pose  plus prn  easy QUT AT gmail .com
     RET
 RET auth  usr
   GATE  usr  name user
-  LET  lon  CALL: fall  CALL: slaw SYM t usr :LLAC  usr
+  LET  lon  fall  slaw SYM t usr  usr
   RET CALL-PAIR PULL: add DASH query  interpolate
     RET QOT PASTE.2 # URL: accounts google com PATH: o oauth2 v2 auth
-  FRONDS:  login CAB hint     IF-NIL  QOT QOT CALL: crip CALL: rash lon suffix email
+  FRONDS:  login CAB hint     IF-NIL  QOT QOT crip rash lon suffix email
        RET access CAB type    SYM offline
        RET response CAB type  SYM code
        RET prompt             SYM consent
@@ -339,16 +356,197 @@ RET scopes  {pasting and interactive editing omitted}
 RET exchange url PASTE.3 # URL: etc.
 EROC
 COLDE
-DOOR CELL: bay IS CALL: bale USE oauth2 keys:LLAC  own IS user state
+DOOR CONS: bay IS USE oauth2  bale keys    own IS  user state
 RET auth  LEAD
   LET a RUN: standard refreshing oauth2 bay ber FROM own
-  RET CALL:  a MOD state usr &  SELF  ref FROM own  GATE b IS user state SELF MOD own b
+  RET CALL:  a MOD state usr & # auto-widen
+        SELF  ref FROM own
+      GATE b IS user state SELF MOD own b
 RET filter request
-  USE auth CALL: out refresh or add header exchange url scopes dialog url
-RET dialog url  CALL: auth usr  usr FROM bal
-RET filter response  USE auth res save after refresh
-RET recieve auth query string  USE auth CALL: in code to token  exchange url
+  USE auth  out refresh or add header  exchange url  scopes  dialog url
+RET dialog url  auth usr  usr FROM bal
+RET filter response  USE auth  res save after refresh
+RET recieve auth query string  USE auth  in code to token  exchange url
 RET recieve auth response  USE auth  bak save both tokens
-RET update  BUNT user state COMT-ARM
+RET update  BUNT user state COMT-LINE
+SAVE
+```
+
+```
+::  
+::::  /hoon/talk/sur
+  ::
+|%
+++  audience  (map partner (pair envelope delivery))    ::  destination+state
+++  atlas  (map ship status)                            ::  presence map
+++  bouquet  (set flavor)                               ::  complete aroma
+++  command                                             ::  effect on party
+  $%  {$design (pair knot (unit config))}               ::  configure+destroy
+      {$publish (list thought)}                         ::  originate
+      {$review (list thought)}                          ::  deliver
+  ==                                                    ::
+++  cabal                                               ::  metaconfiguration
+  $:  loc/config                                        ::  local config
+      ham/(map station config)                          ::  neighborhood configs
+  ==                                                    ::
+++  config                                              ::  party configuration
+  $:  sources/(set partner)                             ::  pulls from
+      caption/cord                                      ::  about
+      cordon/control                                    ::  restricted to
+  ==                                                    ::
+++  control  (pair posture (set ship))                  ::  access control
+++  delivery                                            ::  delivery state
+  $?  $pending                                          ::  undelivered
+      $received                                         ::  delivered
+      $rejected                                         ::  undeliverable
+      $released                                         ::  sent one-way
+      $accepted                                         ::  fully processed
+  ==                                                    ::
+++  envelope  (pair ? (unit partner))                   ::  visible sender
+++  flavor  path                                        ::  content flavor
+++  human                                               ::  human identifier
+  $:  true/(unit (trel @t (unit @t) @t))                ::  true name
+      hand/(unit @t)                                    ::  handle
+  ==                                                    ::
+++  passport                                            ::  foreign flow
+  $%  {$twitter p/@t}                                   ::  twitter
+  ==                                                    ::
+++  posture                                             ::  security posture
+  $?  $black                                            ::  channel
+      $white                                            ::  chamber
+      $green                                            ::  journal
+      $brown                                            ::  mailbox
+  ==                                                    ::
+++  presence   ?($gone $hear $talk)                     ::  status type
+++  register  (pair atlas (map partner atlas))          ::  ping me, ping srcs
+++  shelf  (map knot (pair posture cord))               ::  ship shape
+++  report                                              ::  talk update
+  $%  {$cabal cabal}                                    ::  config neighborhood
+  ::  {$folder (list report)}                           ::  multiple
+      {$grams (pair @ud (list telegram))}               ::  beginning thoughts
+      {$group register}                                 ::  presence
+      {$house shelf}                                    ::  station set
+      {$glyph (jug char (set partner))}                 ::  relevant binding
+  ==                                                    ::
+++  speech                                              ::  narrative action
+  $%  {$lan p/knot q/@t}                                ::  local announce
+      {$exp p/@t}                                       ::  hoon line
+      {$non $~}                                         ::  no content (yo)
+      {$ext p/@tas q/*}                                 ::  extended action
+      {$fat p/torso q/speech}                           ::  attachment
+      ::  {$inv p/station}                              ::  invite to station
+      {$url p/purf:^eyre}                               ::  parsed url
+      {$ire p/serial q/speech}                          ::  in-reply-to
+      {$lin p/? q/@t}                                   ::  no/@ text line
+      {$mor p/(list speech)}                            ::  multiplex
+      {$app p/@tas q/@t}                                ::  app message
+      $:  $api                                          ::  api message
+          service/@tas                                  ::  service name
+          id/@t                                         ::  id on the service
+          id-url/purf:^eyre                             ::  link to id
+          summary/@t                                    ::  summary of event
+          body/@t                                       ::  body of event
+          url/purf:^eyre                                ::  link to event
+          meta/json                                     ::  other data for web
+      ==                                                ::
+  ==                                                    ::
+++  serial     @uvH                                     ::  unique identity
+++  partner    (each station passport)                  ::  interlocutor
+++  status     (pair presence human)                    ::  participant
+++  statement  (trel @da bouquet speech)                ::  when this
+++  station    (pair ship knot)                         ::  domestic flow
+++  telegram   (pair ship thought)                      ::  who which whom what
+++  thought    (trel serial audience statement)         ::  which whom what
+++  torso                                               ::  attachment
+  $%  {$name (pair @t torso)}                           ::  named attachment
+      {$text (list @t)}                                 ::  text lines
+      {$tank (list tank)}                               ::  tank list
+  ==                                                    ::
+--
+
+COLDE-COMT: PATH: hoon talk sur
+CORE
+    audience  map partner  pair envelope delivery    COMT: destination PLUS date
+RET atlas     map ship status                        COMT: presence map
+RET bouqet    set flavor                             COMT: complete aroma
+RET command                                          COMT: ...       
+  MOLD-FRONDS:                                       COMT: ...
+    RET design    pair knot  unit config             COMT: ...
+    RET publish   list thought                       COMT: ...
+    RET review    list thought                       COMT: ...
+    RET
+RET cabal MOLD-CONS:                                 COMT: ...
+      loc IS config                                  COMT: ...
+  RET ham IS map station config                      COMT: ...
+RET config MOLD-CONS: # auto-widened                 COMT: ...
+  RET sources IS set partner                         COMT: ...
+  RET caption IS cord                                COMT: ...
+  RET  cordon IS control                             COMT: ...
+RET control  pair posture  set ship                  COMT: ...
+RET delivery                                         COMT: ...
+  FORK-SYMS:  pending                                COMT: ...
+          RET received                               COMT: ...
+          RET rejected                               COMT: ...
+          RET released                               COMT: ...
+          RET accepted                               COMT: ...
+          RET
+RET envelope  pair WUT  unit partner                 COMT: ...
+RET flavor  path                                     COMT: ...
+RET human MOLD-CONS:                                 COMT: ...
+  RET true IS  unit   trel  AT t  unit AT t  AT t    COMT: ...
+  RET hand IS  unit AT t                             COMT: ...
+RET passport  MOLD-FRONDS:                           COMT: ...
+  RET  twitter  p IS AT t                            COMT: ...
+  RET
+RET posture                                          COMT: ...
+  FORK-SYMS: black                                   COMT: ...
+         RET white                                   COMT: ...
+         RET green                                   COMT: ...
+         RET brown                                   COMT: ...
+         RET
+RET presence  FORK-SYMS: gone hear talk  :KROF       COMT: ...
+RET register  pair atlas  map partner atlas          COMT: ...
+RET shelf     map knot  pair posture cord            COMT: ...
+RET report  MOLD-FRONDS:                             COMT: ...
+  RET cabal cabal                                    COMT: ...
+  RET folder   list report                           COMT: ...
+  RET grams    pair @ud  list telegram               COMT: ...
+  RET group    register                              COMT: ...
+  RET house    shelf                                 COMT: ...
+  RET glyph    jug  char  set partner                COMT: ...
+  RET
+RET speech  MOLD-FRONDS:                             COMT: ...
+  RET lan  p IS knot  q IS AT t                      COMT: ...
+  RET exp  p IS AT t                                 COMT: ...
+  RET non  NIL                                       COMT: ...
+  RET ext  p IS AT t a s  q IS NOUN                  COMT: ...
+  RET fat  p IS torso  q IS speech                   COMT: ...
+  RET inv  p IS station  COMT-ARM                    COMT: ...
+  RET url  p IS purf PULL eyre                       COMT: ...
+  RET ire  p IS serial  q IS speech                  COMT: ...
+  RET lin  p IS WUT  q IS AT t                       COMT: ...
+  RET mor  p IS list speech                          COMT: ...
+  RET app  p IS AT t a s  q IS AT t                  COMT: ...
+      api  CONS:                                     COMT: ...
+        service IS AT t a s                          COMT: ...
+             id IS AT t                              COMT: ...
+         id url IS purf PULL eyre                    COMT: ...
+        summary IS AT t                              COMT: ...
+           body IS AT t                              COMT: ...
+            url IS purf PULL eyre                    COMT: ...
+           meta IS json                              COMT: ...
+      RET
+  RET
+RET serial     AT u v H                              COMT: ...
+RET partner    each station passport                 COMT: ...
+RET status     pair presence human                   COMT: ...
+RET statement  trel  AT d a  bouquet  speech         COMT: ...
+RET station    pair ship knot                        COMT: ...
+RET telegram   pair ship thought                     COMT: ...
+RET thought    trel serial audience statement        COMT: ...
+RET torso  MOLD-FRONDS:                              COMT: ...
+    name  pair  AT t  torso                          COMT: ...
+    text  list AT t                                  COMT: ...
+    tank  list tank                                  COMT: ...
 SAVE
 ```
